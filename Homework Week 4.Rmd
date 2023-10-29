@@ -1,0 +1,48 @@
+---
+title: "Homework Week 4"
+author: "Kirana"
+date: "2023-10-29"
+output: html_document
+---
+
+Step 1: Load Library
+```{r}
+
+library(tidyverse)
+library(sf)
+library(countrycode)
+
+```
+
+Step 2: Load Data
+```{r}
+
+#Load World Shapefile
+world <- st_read("data/World_Countries_Generalized/World_Countries_Generalized.shp")
+
+#Load CSV
+csvdata <- read_csv("data/HDR21-22_Composite_indices_complete_time_series.csv")
+
+```
+
+Step 3: Manipulate Data
+```{r}
+
+#Make new table containing only country, iso3, gender inequality index
+#Make a new column in the table for the difference between gii 2010 and 2019
+globalgender <- csvdata %>%
+  select(contains("country"),
+         contains("iso3"),
+         contains("gii_2010"),
+         contains("gii_2019")) %>%
+  mutate(diff_2010_2019 = (`gii_2019`-`gii_2010`))
+
+#Transforming countrycode from 2-char to 3-char (adjusting to the globalgender countrycode)
+world <- world %>%
+  dplyr::mutate(iso3 = countrycode(ISO, origin='iso2c', destination= 'iso3c'), .before=COUNTRYAFF)
+
+#Left Join
+world <- world %>%
+  left_join(., globalgender,
+            by = "iso3")
+```
