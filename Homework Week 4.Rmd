@@ -35,7 +35,8 @@ globalgender <- csvdata %>%
          contains("iso3"),
          contains("gii_2010"),
          contains("gii_2019")) %>%
-  mutate(diff_2010_2019 = (`gii_2019`-`gii_2010`))
+  mutate(diff_2010_2019 = (`gii_2019`-`gii_2010`)) %>%
+  na.omit()
 
 #Transforming countrycode from 2-char to 3-char (adjusting to the globalgender countrycode)
 world <- world %>%
@@ -45,4 +46,7 @@ world <- world %>%
 world <- world %>%
   left_join(., globalgender,
             by = "iso3")
+
+world_cleaned <- world %>%
+  na.omit()
 ```
